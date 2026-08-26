@@ -11,11 +11,9 @@ class CategoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
 
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-
         title: Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
         ),
 
         trailing: TextButton(
