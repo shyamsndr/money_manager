@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../db/category/category_db.dart';
+import '../../models/category/category_model.dart';
 import 'widgets/category_card.dart';
 
 class ExpenseCategoryList extends StatelessWidget {
@@ -7,23 +10,36 @@ class ExpenseCategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expenseCategories = [
-      'FOOD',
-      'TRAVEL',
-      'SHOPPING',
-      'EDUCATION',
-      'HEALTH',
-      'ENTERTAINMENT',
-      'BILLS',
-    ];
+    final categoryDb = CategoryDbFunctionsImpl();
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
+    final box = Hive.box<CategoryModel>('categories');
 
-      itemCount: expenseCategories.length,
+    return ValueListenableBuilder(
+      valueListenable: box.listenable(),
 
-      itemBuilder: (context, index) {
-        return CategoryCard(title: expenseCategories[index]);
+      builder: (context, box, child) {
+        final categories = categoryDb.getCategories(CategoryType.expense);
+
+        if (categories.isEmpty) {
+          return const Center(
+            child: Text(
+              'No expense categories',
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+
+          itemCount: categories.length,
+
+          itemBuilder: (context, index) {
+            final category = categories[index];
+
+            return CategoryCard(category: category);
+          },
+        );
       },
     );
   }

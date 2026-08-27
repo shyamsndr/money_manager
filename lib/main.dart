@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import 'models/category/category_model.dart';
 import 'screens/home/screen_home.dart';
 
-void main() {
+Future<void> main() async {
+  // Required before using platform plugins
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Register CategoryType adapter
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(CategoryTypeAdapter());
+  }
+
+  // Register CategoryModel adapter
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(CategoryModelAdapter());
+  }
+
+  // Open category box
+  await Hive.openBox<CategoryModel>('categories');
+
   runApp(const MyApp());
 }
 
@@ -13,6 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'Money Manager',
 
       theme: ThemeData(

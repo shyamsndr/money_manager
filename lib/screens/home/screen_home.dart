@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../category/screen_category.dart';
 import 'widgets/transaction_card.dart';
+import '../category/screen_add_category.dart';
 
 class ScreenHome extends StatefulWidget {
   const ScreenHome({super.key});
@@ -19,11 +20,18 @@ class _ScreenHomeState extends State<ScreenHome> {
   final screens = const [ScreenTransactions(), ScreenCategory()];
 
   // Floating button action
-  void floatingButtonPressed() {
+  void floatingButtonPressed(BuildContext context) {
     if (currentIndex == 0) {
       print('Floating button pressed from HOME');
     } else {
-      print('Floating button pressed from CATEGORY');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return const ScreenAddCategory();
+          },
+        ),
+      );
     }
   }
 
@@ -46,7 +54,9 @@ class _ScreenHomeState extends State<ScreenHome> {
 
       // Same floating button
       floatingActionButton: FloatingActionButton(
-        onPressed: floatingButtonPressed,
+        onPressed: () {
+          floatingButtonPressed(context);
+        },
         backgroundColor: Colors.deepPurple.shade100,
         foregroundColor: Colors.deepPurple,
         child: const Icon(Icons.add),
