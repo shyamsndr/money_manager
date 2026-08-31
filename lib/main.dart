@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
+import 'models/transaction/transaction_model.dart';
 import 'models/category/category_model.dart';
 import 'screens/home/screen_home.dart';
 
@@ -23,6 +23,14 @@ Future<void> main() async {
 
   // Open category box
   await Hive.openBox<CategoryModel>('categories');
+
+  //Register TranscationModel adapter
+  if (!Hive.isAdapterRegistered(2)) {
+    Hive.registerAdapter(TransactionModelAdapter());
+  }
+
+  //open transaction model
+  await Hive.openBox<TransactionModel>('transactions');
 
   runApp(const MyApp());
 }

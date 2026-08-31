@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
-class TransactionCard extends StatelessWidget {
-  final String amount;
-  final String date;
-  final String title;
+import '../../../models/transaction/transaction_model.dart';
 
-  const TransactionCard({
-    super.key,
-    required this.amount,
-    required this.date,
-    required this.title,
-  });
+class TransactionCard extends StatelessWidget {
+  final TransactionModel transaction;
+
+  const TransactionCard({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {
+    final isIncome = transaction.type.name == 'income';
+
     return Card(
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 12),
       elevation: 2,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
 
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+        title: Text(
+          transaction.purpose,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
 
-        child: Column(
-          children: [
-            Text(
-              amount,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+        subtitle: Text(
+          '${transaction.date.day}/'
+          '${transaction.date.month}/'
+          '${transaction.date.year}',
+        ),
 
-            const SizedBox(height: 8),
-
-            Text(date, style: const TextStyle(fontSize: 16)),
-
-            const SizedBox(height: 5),
-
-            Text(title, style: const TextStyle(fontSize: 18)),
-          ],
+        trailing: Text(
+          isIncome ? '+ ₹${transaction.amount}' : '- ₹${transaction.amount}',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: isIncome ? Colors.green : Colors.red,
+          ),
         ),
       ),
     );

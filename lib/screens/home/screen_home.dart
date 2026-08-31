@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../add_transaction/screen_add_transaction.dart';
 import '../category/screen_category.dart';
-import 'widgets/transaction_card.dart';
 import '../category/screen_add_category.dart';
+
+import '../../db/transaction/transaction_db.dart';
+import '../../models/transaction/transaction_model.dart';
+
+import 'widgets/transaction_card.dart';
 
 class ScreenHome extends StatefulWidget {
   const ScreenHome({super.key});
@@ -22,7 +28,14 @@ class _ScreenHomeState extends State<ScreenHome> {
   // Floating button action
   void floatingButtonPressed(BuildContext context) {
     if (currentIndex == 0) {
-      print('Floating button pressed from HOME');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return const ScreenAddTransaction();
+          },
+        ),
+      );
     } else {
       Navigator.push(
         context,
@@ -38,7 +51,7 @@ class _ScreenHomeState extends State<ScreenHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // SAME APP BAR for both screens
+      // SAME APP BAR
       appBar: AppBar(
         title: const Text(
           'Money Manager',
@@ -77,7 +90,6 @@ class _ScreenHomeState extends State<ScreenHome> {
 
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-
           BottomNavigationBarItem(
             icon: Icon(Icons.category),
             label: 'Category',
@@ -97,12 +109,62 @@ class ScreenTransactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    final transactionDb = TransactionDbFunctionsImpl();
 
-      children: const [
-        TransactionCard(amount: 'XXXXXX', date: '12 DEC', title: 'SALARY'),
-      ],
+    return ValueListenableBuilder<Box<TransactionModel>>(
+      valueListenable: transactionDb.box.listenable(),
+
+      builder: (context, box, child) {
+        final transactions = box.values.toList().reversed.toList();
+
+        // No transactions
+        if (transactions.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.receipt_long, size: 60, color: Colors.grey),
+
+                SizedBox(height: 15),
+
+                Text(
+                  'No transactions yet',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                ),
+
+                SizedBox(height: 5),
+
+                Text(
+                  'Add your first transaction',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Display all transactions
+        return ListView.builder(
+          padding: const EdgeInsets.only(
+            top: 15,
+            left: 16,
+            right: 16,
+            bottom: 16,
+          ),
+
+          itemCount: transactions.length,
+
+          itemBuilder: (context, index) {
+            final transaction = transactions[index];
+
+            return TransactionCard(transaction: transaction);
+          },
+        );
+      },
     );
   }
 }
