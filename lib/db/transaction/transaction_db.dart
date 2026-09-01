@@ -6,6 +6,8 @@ abstract class TransactionDbFunctions {
   Future<void> insertTransaction(TransactionModel transaction);
 
   List<TransactionModel> getTransactions();
+
+  Future<void> deleteTransaction(dynamic key);
 }
 
 class TransactionDbFunctionsImpl implements TransactionDbFunctions {
@@ -19,5 +21,10 @@ class TransactionDbFunctionsImpl implements TransactionDbFunctions {
   @override
   List<TransactionModel> getTransactions() {
     return box.values.toList();
+  }
+
+  @override
+  Future<void> deleteTransaction(dynamic key) async {
+    await box.delete(key);
   }
 }

@@ -161,7 +161,39 @@ class ScreenTransactions extends StatelessWidget {
           itemBuilder: (context, index) {
             final transaction = transactions[index];
 
-            return TransactionCard(transaction: transaction);
+            // Get the actual Hive key
+            final key = box.keys.toList().reversed.toList()[index];
+
+            return Dismissible(
+              key: ValueKey(key),
+
+              direction: DismissDirection.endToStart,
+
+              background: Container(
+                margin: const EdgeInsets.only(left: 20, right: 20, bottom: 12),
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+
+              onDismissed: (direction) async {
+                await transactionDb.deleteTransaction(key);
+
+                if (!context.mounted) return;
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Transaction deleted')),
+                );
+              },
+
+              child: TransactionCard(transaction: transaction),
+            );
           },
         );
       },
